@@ -27,17 +27,18 @@
             color: var(--text-color);
             font-family: var(--font-family);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
         .container {
             display: grid;
             grid-template-columns: 320px 1fr;
-            gap: 40px;
+            gap: 20px;
             width: 100%;
             max-width: 1300px;
         }
@@ -45,17 +46,17 @@
         .left-panel {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
         }
 
         .title-header {
             background-color: var(--accent-color);
             color: var(--text-color);
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 8px;
-            font-size: 1.5em;
+            font-size: 1.2em;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 0;
         }
 
         .input-container {
@@ -64,8 +65,8 @@
             background-color: var(--primary-color);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 12px;
-            font-size: 1.5em;
+            padding: 8px;
+            font-size: 1.2em;
         }
 
         .input-container input {
@@ -73,8 +74,8 @@
             border: none;
             color: var(--text-color);
             text-align: center;
-            width: 55px;
-            font-size: 1em;
+            width: 50px;
+            font-size: 0.9em;
             font-family: var(--font-family);
         }
         .input-container input:focus { outline: none; }
@@ -89,62 +90,64 @@
         
         #error-message {
             color: var(--red);
-            font-size: 0.9em;
+            font-size: 0.8em;
             text-align: center;
-            height: 20px;
-            margin-top: 5px;
+            height: 18px;
+            margin-top: 2px;
         }
 
         .tyre-display-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .tyre-display {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 5px;
         }
 
-        .tyre-graphic-side { width: 150px; height: 150px; }
-        .tyre-graphic-front { width: 70px; height: 150px; }
+        .tyre-graphic-side { width: 100px; height: 100px; }
+        .tyre-graphic-front { width: 50px; height: 100px; }
 
         .tyre-label {
             background-color: var(--accent-color);
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 8px;
-            font-size: 1em;
+            font-size: 0.9em;
             font-weight: bold;
         }
 
         .comparison-calculations {
-            font-size: 0.9em;
-            padding: 10px;
+            font-size: 0.8em;
+            padding: 8px;
             background-color: var(--primary-color);
             border-radius: 8px;
             text-align: center;
-            min-height: 4.5em;
+            min-height: 3em;
         }
         #distance-calc {
-            margin-bottom: 0.5em;
+            margin-bottom: 0.3em;
         }
 
         .right-panel {
             background-color: var(--primary-color);
-            padding: 20px;
+            padding: 10px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
             overflow-x: auto;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
         }
         
         .preview-text {
             text-align: center;
             color: var(--disabled-text);
             margin-top: -5px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-style: italic;
-            font-size: 0.9em;
+            font-size: 0.8em;
         }
 
         #results-table {
@@ -155,22 +158,25 @@
         #results-table th,
         #results-table td {
             border: 1px solid var(--border-color);
-            padding: 8px;
+            padding: 4px;
             text-align: center;
-            min-width: 80px;
+            min-width: 60px;
+            font-size: 0.9em;
         }
 
         #results-table .rim-header {
             background-color: var(--accent-color);
             color: var(--text-color);
-            font-size: 1.2em;
-            padding: 12px;
+            font-size: 1em;
+            padding: 6px;
             border-radius: 6px;
         }
 
         #results-table .profile-header {
             font-weight: bold;
             background-color: var(--secondary-color);
+            padding: 4px;
+            font-size: 0.8em;
         }
         
         #results-table .data-cell.unclickable {
@@ -288,7 +294,7 @@
             const generateAlternatives = (baseSize) => {
                 const alternatives = {
                     rims: new Set(),
-                    widths: [baseSize.width - 10, baseSize.width, baseSize.width + 10],
+                    widths: [baseSize.width - 20, baseSize.width - 10, baseSize.width, baseSize.width + 10, baseSize.width + 20],
                     profiles: new Set()
                 };
                 for (let i = -2; i <= 2; i++) {
@@ -303,7 +309,7 @@
                 }
                 return {
                     rims: Array.from(alternatives.rims).sort((a, b) => a - b),
-                    widths: alternatives.widths,
+                    widths: alternatives.widths.filter(w => w >= MIN_WIDTH && w <= MAX_WIDTH && w % 5 === 0).sort((a, b) => a - b),
                     profiles: Array.from(alternatives.profiles).sort((a, b) => a - b)
                 };
             };
@@ -378,7 +384,7 @@
                 const odoReading = 100000 * ratio;
                 const odoDiff = odoReading - 100000;
                 const odoStatus = odoDiff < 0 ? 'short' : 'over';
-                distanceCalcText.textContent = `Odo reading at real 100,000km - ${Math.abs(odoDiff).toFixed(0)}km ${oStatus}`;
+                distanceCalcText.textContent = `Odo reading at real 100,000km - ${Math.abs(odoDiff).toFixed(0)}km ${odoStatus}`;
 
                 const speedoReading = 100 * ratio;
                 const speedoDiff = speedoReading - 100;
